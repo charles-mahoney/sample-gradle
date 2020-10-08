@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: service-template
+parameters:
+- name: APPLICATION_NAME
+objects:
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: ${APPLICATION_NAME}
+    labels:
+      app: ${APPLICATION_NAME}
+  spec:
+    ports:
+      - name: 8080-tcp
+        protocol: TCP
+        port: 8080
+        targetPort: 8080
+    selector:
+      app: ${APPLICATION_NAME}
+      deploymentconfig: ${APPLICATION_NAME}

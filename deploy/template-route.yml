@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: service-template
+parameters:
+- name: APPLICATION_NAME
+objects:
+- kind: Route
+  apiVersion: route.openshift.io/v1
+  metadata:
+    name: ${APPLICATION_NAME}
+    labels:
+      app: ${APPLICATION_NAME}
+  spec:
+    to:
+      kind: Service
+      name: ${APPLICATION_NAME}
+    port:
+      targetPort: 8080-tcp

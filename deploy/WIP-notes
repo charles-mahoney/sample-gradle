@@ -1,0 +1,38 @@
+
+oc new-build java --name=java-binary-build --binary=true
+
+oc start-build bc/java-binary-build --from-file=./build/libs/example-0.0.1-SNAPSHOT.jar --follow
+
+oc apply -f cfg/deploymentconfig.yml
+oc apply -f cfg/service.yml
+
+
+oc new-build java --name=morningsample --binary=true
+
+
+oc start-build bc/morningsample --from-dir=./build/libs/ --follow
+
+oc create secret generic shared-secret  --from-file=deploy/db.properties
+
+oc process -f deploy/template-deploymentconfig.yml -p APPLICATION_NAME=morningsample | oc apply -f -
+
+oc process -f deploy/template-service.yml -p APPLICATION_NAME=morningsample | oc apply -f -
+oc process -f deploy/template-route.yml -p APPLICATION_NAME=morningsample | oc apply -f -
+
+
+
+
+
+oc process -f deploy/template-deploymentconfig2.yml -p APPLICATION_NAME=morningsample -p SHARED_FILE_PATH=/opt/sharedproperties | oc apply -f -
+
+oc process -f deploy/template-deploymentconfig3.yml -p APPLICATION_NAME=morningsample -p SHARED_FILE_PATH=/opt/sharedproperties -p SPRING_PROFILE=dev | oc apply -f -
+
+oc process -f deploy/template-deploymentconfig4.yml --param-file=deploy/template-deploymentconfig4.properties | oc apply -f -
+
+oc tag morningsample:latest morningsample:dev
+
+oc create configmap sampleapp-configurations --from-file=deploy/config.properties
+
+oc create configmap sampleapp-configurations-env --from-env-file=deploy/config.properties
+
+oc process -f deploy/template-deploymentconfig5.yml --param-file=deploy/template-deploymentconfig4.properties | oc apply -f -
